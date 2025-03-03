@@ -20,11 +20,13 @@ use crate::{
             ConfigSection, ConfigSectionPointers, ConfigSectionSettings, SectionHandle,
             SectionHandleMut, SectionReadCbT, SectionWriteCbT,
         },
-        BaseConfigOption, BooleanOption, ColorOption, ConfigOption, EnumOption, IntegerOption,
-        StringOption,
+        BaseConfigOption, BooleanOption, ColorOption, ConfigOption, IntegerOption, StringOption,
     },
     LossyCString, Weechat,
 };
+
+#[cfg(not(weechat408))]
+use crate::config::EnumOption;
 
 /// Weechat configuration file
 pub struct Config {
@@ -316,6 +318,7 @@ impl Config {
                 weechat_ptr,
                 _phantom: PhantomData,
             }),
+            #[cfg(not(weechat408))]
             "enum" => ConfigOption::Enum(EnumOption {
                 ptr: option_ptr,
                 weechat_ptr,

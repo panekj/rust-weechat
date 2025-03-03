@@ -41,6 +41,8 @@
 
 use std::ffi::CString;
 
+mod api;
+
 #[cfg(feature = "async")]
 mod executor;
 mod hashtable;

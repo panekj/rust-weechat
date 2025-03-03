@@ -1,10 +1,11 @@
 [workspace]
-members = [
-    "crates/*",
-]
+members = ["crates/*"]
 resolver = "2"
 
 [profile.release]
 opt-level = "z"
 codegen-units = 1
 lto = true
+
+[patch.crates-io]
+pipe-channel = { git = "https://github.com/panekj/pipe-channel.git", rev = "64adec1ccb7580eb16a51b7faa6b881da4e3368c" }

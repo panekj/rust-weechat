@@ -12,12 +12,14 @@ use std::{
 use weechat_sys::{t_config_file, t_config_option, t_config_section, t_weechat_plugin};
 
 use super::config_options::OptionCallback;
+#[cfg(not(weechat408))]
+use crate::config::{EnumOption, EnumOptionSettings};
 use crate::{
     config::{
         config_options::{CheckCB, OptionPointers, OptionType},
         BaseConfigOption, BooleanOption, BooleanOptionSettings, ColorOption, ColorOptionSettings,
-        Conf, Config, ConfigOptions, EnumOption, EnumOptionSettings, IntegerOption,
-        IntegerOptionSettings, OptionChanged, StringOption, StringOptionSettings,
+        Conf, Config, ConfigOptions, IntegerOption, IntegerOptionSettings, OptionChanged,
+        StringOption, StringOptionSettings,
     },
     LossyCString, Weechat,
 };
@@ -41,6 +43,7 @@ pub enum ConfigOption<'a> {
     Integer(IntegerOption<'a>),
     String(StringOption<'a>),
     Color(ColorOption<'a>),
+    #[cfg(not(weechat408))]
     Enum(EnumOption<'a>),
 }
 
@@ -51,6 +54,7 @@ impl<'a> ConfigOption<'a> {
             ConfigOption::Boolean(ref o) => o,
             ConfigOption::Integer(ref o) => o,
             ConfigOption::String(ref o) => o,
+            #[cfg(not(weechat408))]
             ConfigOption::Enum(ref o) => o,
         }
     }
@@ -93,6 +97,7 @@ impl<'a> AsRef<dyn BaseConfigOption + 'a> for StringOption<'a> {
     }
 }
 
+#[cfg(not(weechat408))]
 impl<'a> AsRef<dyn BaseConfigOption + 'a> for EnumOption<'a> {
     fn as_ref(&self) -> &(dyn BaseConfigOption + 'a) {
         self
@@ -111,6 +116,7 @@ pub(crate) enum ConfigOptionPointers {
     Integer(*const c_void),
     String(*const c_void),
     Color(*const c_void),
+    #[cfg(not(weechat408))]
     Enum(*const c_void),
 }
 
@@ -385,6 +391,7 @@ impl Drop for ConfigSection {
                     ConfigOptionPointers::Color(p) => {
                         drop(Box::from_raw(p as *mut OptionPointers<ColorOption>));
                     }
+                    #[cfg(not(weechat408))]
                     ConfigOptionPointers::Enum(p) => {
                         drop(Box::from_raw(p as *mut OptionPointers<EnumOption>));
                     }
@@ -645,10 +652,13 @@ impl ConfigSection {
         Ok(option)
     }
 
+    #[cfg(not(weechat408))]
     /// Create a new enum Weechat configuration option.
     ///
     /// Returns None if the option couldn't be created, e.g. if a option with
     /// the same name already exists.
+    ///
+    /// *Available since Weechat 4.1.0*
     ///
     /// # Arguments
     /// * `settings` - Settings that decide how the option should be created.

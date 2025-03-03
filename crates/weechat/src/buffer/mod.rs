@@ -756,13 +756,24 @@ impl Buffer<'_> {
     /// Display a message on the buffer.
     pub fn print(&self, message: &str) {
         let weechat = self.weechat();
-        let printf_date_tags = weechat.get().printf_datetime_tags.unwrap();
+        #[cfg(not(weechat408))]
+        let printf_datetime_tags = weechat.get().printf_datetime_tags.unwrap();
+        #[cfg(weechat408)]
+        let printf_datetime_tags = weechat.get().printf_date_tags.unwrap();
 
         let fmt_str = LossyCString::new("%s");
-        let c_message = LossyCString::new(message);
+        let message = LossyCString::new(message);
 
         unsafe {
-            printf_date_tags(self.ptr(), 0, 0, ptr::null(), fmt_str.as_ptr(), c_message.as_ptr())
+            printf_datetime_tags(
+                self.ptr(),
+                0,
+                #[cfg(not(weechat408))]
+                0,
+                ptr::null(),
+                fmt_str.as_ptr(),
+                message.as_ptr(),
+            )
         }
     }
 
@@ -778,7 +789,11 @@ impl Buffer<'_> {
     /// * `message` - The message that will be displayed.
     pub fn print_date_tags(&self, date: isize, tags: &[&str], message: &str) {
         let weechat = self.weechat();
-        let printf_date_tags = weechat.get().printf_datetime_tags.unwrap();
+
+        #[cfg(not(weechat408))]
+        let printf_datetime_tags = weechat.get().printf_datetime_tags.unwrap();
+        #[cfg(weechat408)]
+        let printf_datetime_tags = weechat.get().printf_date_tags.unwrap();
 
         let fmt_str = LossyCString::new("%s");
         let tags = tags.join(",");
@@ -786,9 +801,10 @@ impl Buffer<'_> {
         let message = LossyCString::new(message);
 
         unsafe {
-            printf_date_tags(
+            printf_datetime_tags(
                 self.ptr(),
                 date as _,
+                #[cfg(not(weechat408))]
                 0,
                 tags.as_ptr(),
                 fmt_str.as_ptr(),
