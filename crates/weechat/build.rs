@@ -1,5 +1,3 @@
-// use versions::*;
-
 #[allow(unused)]
 #[repr(u64)]
 enum WeechatApiVersions {
@@ -29,9 +27,6 @@ fn main() {
 
     println!("cargo::warning=WEECHAT_PLUGIN_API_VERSION: {version}");
 
-    // pub const WEECHAT_PLUGIN_API_VERSION_FORMAT: &[time::format_description::FormatItem<'_>] =
-    //     time::macros::format_description!("[year][month][day]");
-
     let version: u64 = version.parse().unwrap();
 
     use crate::WeechatApiVersions::*;
@@ -58,31 +53,4 @@ fn main() {
             println!("cargo::warning=Failed to match weechat API version: {version}");
         }
     }
-
-    let api = format!(r#"const WEECHAT_PLUGIN_API_VERSION: i64 = {version};"#);
-
-    std::fs::write(std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("api.rs"), api)
-        .unwrap();
 }
-
-// fn get_cfgs(version: ::time::Date) -> Vec<&'static str> {
-//     let mut cfgs = vec![];
-
-//     if version >= WEECHAT_PLUGIN_API_VERSION_4_4_0 {
-//         cfgs.push("weechat440");
-//     }
-//     if version >= WEECHAT_PLUGIN_API_VERSION_4_3_0 {
-//         cfgs.push("weechat430");
-//     }
-//     if version >= WEECHAT_PLUGIN_API_VERSION_4_2_0 {
-//         cfgs.push("weechat420");
-//     }
-//     if version >= WEECHAT_PLUGIN_API_VERSION_4_1_0 {
-//         cfgs.push("weechat410");
-//     }
-//     if version >= WEECHAT_PLUGIN_API_VERSION_4_0_0 {
-//         cfgs.push("weechat400");
-//     }
-
-//     cfgs
-// }
